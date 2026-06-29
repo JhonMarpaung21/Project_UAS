@@ -38,17 +38,173 @@
     </div>
   </header>
 
-  <main>
-    <section class="section">
-      <div class="container">
-        <h1>Buat Janji Temu</h1>
-        <p class="section-desc">
-          <em>🚧 Coming Soon - Form pendaftaran online akan tersedia pada tahap berikutnya.</em>
-        </p>
-        <a href="Beranda.html" class="btn-primer">Kembali ke Beranda</a>
+<main>
+  <section class="hero">
+    <div class="container">
+      <h1>Buat Janji Temu</h1>
+      <p>Isi formulir berikut untuk mendaftar. Konfirmasi akan dikirim sesuai metode yang kamu pilih.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="janji-grid">
+        <div class="janji-form">
+
+          <form id="formJanji">
+            <h2>Data Diri Pasien</h2>
+            <div class="form-group">
+              <label for="nama">Nama Lengkap <span class="required">*</span></label>
+              <input type="text" id="nama" name="nama" placeholder="Masukkan nama lengkap" required>
+            </div>
+
+            <div class="form-group">
+              <label for="nik">NIK / No. KTP <span class="required">*</span></label>
+              <input type="text" id="nik" name="nik" placeholder="16 digit NIK" maxlength="16" required>
+              <small class="form-note">* Data NIK hanya digunakan untuk keperluan pendaftaran dan tidak disimpan oleh sistem.</small>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="tanggalLahir">Tanggal Lahir <span class="required">*</span></label>
+                <input type="date" id="tanggalLahir" name="tanggalLahir" required>
+              </div>
+
+              <div class="form-group">
+                <label>Jenis Kelamin <span class="required">*</span></label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="jenisKelamin" value="Laki-laki" required> Laki-laki
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="jenisKelamin" value="Perempuan"> Perempuan
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="telepon">Nomor Telepon / WhatsApp <span class="required">*</span></label>
+              <input type="tel" id="telepon" name="telepon" placeholder="Contoh: 08123456789" required>
+            </div>
+            <hr>
+
+            <h2>Data Kunjungan</h2>
+            <div class="form-row">
+              <div class="form-group">
+                <label>Status Pasien <span class="required">*</span></label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="statusPasien" value="Pasien Baru" required> Pasien Baru
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="statusPasien" value="Pasien Lama"> Pasien Lama
+                  </label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Kepemilikan BPJS</label>
+                <div class="radio-group">
+                  <label class="radio-label">
+                    <input type="radio" name="bpjs" value="Ya"> Ya
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="bpjs" value="Tidak"> Tidak
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="poli">Pilih Poli <span class="required">*</span></label>
+                <select id="poli" name="poli" required>
+                  <option value="" disabled selected>-- Pilih Poli --</option>
+                  <option value="Umum">Poli Umum</option>
+                  <option value="Gigi">Poli Gigi &amp; Mulut</option>
+                  <option value="Anak">Poli Anak</option>
+                  <option value="Penyakit Dalam">Poli Penyakit Dalam</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="dokter">Pilih Dokter <span class="required">*</span></label>
+                <select id="dokter" name="dokter" required>
+                  <option value="" disabled selected>-- Pilih Dokter --</option>
+                  <option value="dr. Partono Tan">dr. Partono Tan — Umum</option>
+                  <option value="drg. Jhon Sebastian Marpaung">drg. Jhon Sebastian Marpaung — Gigi</option>
+                  <option value="dr. Yosafat Dharma Purba, Sp.A">dr. Yosafat Bryan Darma Purba, Sp.A — Anak</option>
+                  <option value="dr. Ariep Adhi Pratama, Sp.PD">dr. Ariep Adhi Pratama, Sp.PD — Penyakit Dalam</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="tanggalKunjungan">Tanggal Kunjungan <span class="required">*</span></label>
+              <input type="date" id="tanggalKunjungan" name="tanggalKunjungan" required>
+            </div>
+
+            <div class="form-group">
+              <label for="keluhan">Keluhan Utama <span class="required">*</span></label>
+              <textarea id="keluhan" name="keluhan" rows="4" placeholder="Ceritakan keluhan utama Anda secara singkat..." required></textarea>
+            </div>
+
+            <hr>
+
+            <h2>Kirim Konfirmasi Via</h2>
+
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="metodePengiriman" value="whatsapp" checked> WhatsApp
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="metodePengiriman" value="email"> Email
+              </label>
+            </div>
+
+            <div class="form-group" id="emailGroup" style="display:none;">
+              <label for="email">Alamat Email <span class="required">*</span></label>
+              <input type="email" id="email" name="email" placeholder="contoh@email.com">
+            </div>
+
+            <button type="submit" class="btn btn-primer btn-full">Kirim Pendaftaran</button>
+
+          </form>
+        </div>
+
+        <div class="janji-info">
+
+          <div class="card">
+            <h3>Yang Perlu Dibawa</h3>
+            <ul>
+              <li>KTP / Kartu Identitas</li>
+              <li>Kartu BPJS (jika ada)</li>
+              <li>Kartu berobat lama (jika pasien lama)</li>
+              <li>Hasil pemeriksaan sebelumnya (jika ada)</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h3>Langkah Setelah Mendaftar</h3>
+            <ol>
+              <li>Konfirmasi dikirim via WhatsApp atau Email</li>
+              <li>Datang 15 menit sebelum jadwal</li>
+              <li>Lapor ke meja resepsionis</li>
+              <li>Tunggu panggilan dari dokter</li>
+            </ol>
+          </div>
+
+          <div class="card">
+            <h3>Butuh Bantuan?</h3>
+            <p>Hubungi kami langsung jika ada pertanyaan seputar pendaftaran.</p>
+            <a href="https://wa.me/6285831581425" class="btn btn-primer" target="_blank">Chat WhatsApp</a>
+          </div>
+
+        </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
+
+</main>
 
   <footer class="footer">
     <div class="container footer-inner">
