@@ -24,11 +24,20 @@ document.querySelectorAll('.card, .step, .stat').forEach(el => {
   observer.observe(el);
 });
 
+const STORAGE_KEY = 'klinik_daftar_pasien';
+
+function ambilDataPasien() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+}
+
+function simpanDataPasien(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
 const formJanji = document.getElementById('formJanji');
 
 if (formJanji) {
 
-  // --- Data dokter per poli ---
   const dataDokter = {
     'Umum': [
       { value: 'dr. Partono Tan', label: 'dr. Partono Tan' }
@@ -44,34 +53,29 @@ if (formJanji) {
     ]
   };
 
-  // --- Hari praktik per dokter (0=Minggu, 1=Senin, ..., 6=Sabtu) ---
   const jadwalDokter = {
-    'dr. Partono Tan'                  : [0, 1, 2, 3, 4, 5, 6],
-    'drg. Jhon Sebastian Marpaung'     : [1, 2, 3, 4, 5, 6],
-    'dr. Yosafat Dharma Purba, Sp.A'   : [1, 2, 3, 4, 5],
-    'dr. Ariep Adhi Pratama, Sp.PD'    : [1, 3, 5]
+    'dr. Partono Tan': [0, 1, 2, 3, 4, 5, 6],
+    'drg. Jhon Sebastian Marpaung': [1, 2, 3, 4, 5, 6],
+    'dr. Yosafat Dharma Purba, Sp.A': [1, 2, 3, 4, 5],
+    'dr. Ariep Adhi Pratama, Sp.PD': [1, 3, 5]
   };
 
   const namaHari = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
 
-  const selectPoli             = document.getElementById('poli');
-  const selectDokter           = document.getElementById('dokter');
-  const inputTanggalKunjungan  = document.getElementById('tanggalKunjungan');
-  const inputTanggalLahir      = document.getElementById('tanggalLahir');
-  const inputNIK               = document.getElementById('nik');
-  const emailGroup             = document.getElementById('emailGroup');
-  const inputEmail             = document.getElementById('email');
-  const radioMetode            = document.querySelectorAll('input[name="metodePengiriman"]');
+  const selectPoli = document.getElementById('poli');
+  const selectDokter = document.getElementById('dokter');
+  const inputTanggalKunjungan = document.getElementById('tanggalKunjungan');
+  const inputTanggalLahir = document.getElementById('tanggalLahir');
+  const inputNIK = document.getElementById('nik');
+  const emailGroup = document.getElementById('emailGroup');
+  const inputEmail = document.getElementById('email');
+  const radioMetode = document.querySelectorAll('input[name="metodePengiriman"]');
 
-  // --- Batasi tanggal lahir: tidak boleh melebihi hari ini ---
   const today = new Date();
   const toDateStr = (d) => d.toISOString().split('T')[0];
   inputTanggalLahir.max = toDateStr(today);
-
-  // --- Batasi tanggal kunjungan: tidak boleh sebelum hari ini ---
   inputTanggalKunjungan.min = toDateStr(today);
 
-  // --- Toggle field email ---
   radioMetode.forEach(radio => {
     radio.addEventListener('change', () => {
       const pilihEmail = radio.value === 'email' && radio.checked;
@@ -85,10 +89,8 @@ if (formJanji) {
     });
   });
 
-  // --- Filter dokter berdasarkan poli yang dipilih ---
   selectPoli.addEventListener('change', () => {
     const dokterList = dataDokter[selectPoli.value] || [];
-
     selectDokter.innerHTML = '<option value="" disabled selected>-- Pilih Dokter --</option>';
     dokterList.forEach(({ value, label }) => {
       const opt = document.createElement('option');
@@ -96,18 +98,14 @@ if (formJanji) {
       opt.textContent = label;
       selectDokter.appendChild(opt);
     });
-
-    // Reset tanggal kunjungan saat poli berubah
     inputTanggalKunjungan.value = '';
   });
 
-  // --- Validasi tanggal kunjungan sesuai hari praktik dokter ---
   inputTanggalKunjungan.addEventListener('change', () => {
     const dokterDipilih = selectDokter.value;
     if (!dokterDipilih) return;
 
     const hariPraktik = jadwalDokter[dokterDipilih];
-    // Tambah satu hari offset untuk menghindari timezone shift
     const tanggal = new Date(inputTanggalKunjungan.value + 'T00:00:00');
     const hariDipilih = tanggal.getDay();
 
@@ -118,48 +116,53 @@ if (formJanji) {
     }
   });
 
-  // --- Validasi NIK: hanya angka, max 16 digit ---
   inputNIK.addEventListener('input', () => {
     inputNIK.value = inputNIK.value.replace(/\D/g, '').slice(0, 16);
   });
 
-  // --- Submit form ---
   formJanji.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    // Cek NIK 16 digit
     if (inputNIK.value.length !== 16) {
       alert('NIK harus terdiri dari 16 digit angka.');
       inputNIK.focus();
       return;
     }
 
-    // Ambil semua nilai
-    const nama            = document.getElementById('nama').value.trim();
-    const nik             = inputNIK.value;
-    const tanggalLahir    = inputTanggalLahir.value;
-    const jenisKelamin    = document.querySelector('input[name="jenisKelamin"]:checked')?.value || '-';
-    const telepon         = document.getElementById('telepon').value.trim();
-    const statusPasien    = document.querySelector('input[name="statusPasien"]:checked')?.value || '-';
-    const bpjs            = document.querySelector('input[name="bpjs"]:checked')?.value || '-';
-    const poli            = selectPoli.value;
-    const dokter          = selectDokter.value;
+    const nama = document.getElementById('nama').value.trim();
+    const nik = inputNIK.value;
+    const tanggalLahir = inputTanggalLahir.value;
+    const jenisKelamin = document.querySelector('input[name="jenisKelamin"]:checked')?.value || '-';
+    const telepon = document.getElementById('telepon').value.trim();
+    const statusPasien = document.querySelector('input[name="statusPasien"]:checked')?.value || '-';
+    const bpjs = document.querySelector('input[name="bpjs"]:checked')?.value || '-';
+    const poli = selectPoli.value;
+    const dokter = selectDokter.value;
     const tanggalKunjungan = inputTanggalKunjungan.value;
-    const keluhan         = document.getElementById('keluhan').value.trim();
-    const metode          = document.querySelector('input[name="metodePengiriman"]:checked')?.value;
+    const keluhan = document.getElementById('keluhan').value.trim();
+    const metode = document.querySelector('input[name="metodePengiriman"]:checked')?.value;
 
-    // Rakit pesan
+    const dataBaru = {
+      id: Date.now(),
+      nama, nik, tanggalLahir, jenisKelamin, telepon,
+      statusPasien, bpjs, poli, dokter, tanggalKunjungan, keluhan
+    };
+
+    const dataPasien = ambilDataPasien();
+    dataPasien.push(dataBaru);
+    simpanDataPasien(dataPasien);
+
     const pesan =
-`*PENDAFTARAN JANJI TEMU*
+      `*PENDAFTARAN JANJI TEMU*
 *Klinik Sehat Bersama*
-
+ 
 *— Data Diri Pasien —*
 Nama          : ${nama}
 NIK           : ${nik}
 Tgl. Lahir    : ${tanggalLahir}
 Jenis Kelamin : ${jenisKelamin}
 No. Telepon   : ${telepon}
-
+ 
 *— Data Kunjungan —*
 Status Pasien : ${statusPasien}
 BPJS          : ${bpjs}
@@ -171,12 +174,83 @@ Keluhan       : ${keluhan}`;
     if (metode === 'whatsapp') {
       const nomorWA = '6285831581425';
       window.open(`https://wa.me/${nomorWA}?text=${encodeURIComponent(pesan)}`, '_blank');
-
     } else if (metode === 'email') {
-      const emailTujuan = 'kliniksehatbersama@email.com'; // ganti dengan email klinik asli
+      const emailTujuan = 'kliniksehatbersama@email.com';
       const subject = encodeURIComponent('Pendaftaran Janji Temu - Klinik Sehat Bersama');
       window.open(`mailto:${emailTujuan}?subject=${subject}&body=${encodeURIComponent(pesan)}`, '_blank');
     }
+
+    alert('Pendaftaran berhasil disimpan! Data dapat dilihat di halaman Daftar Pasien.');
+    formJanji.reset();
+    emailGroup.style.display = 'none';
+  });
+}
+
+const tabelBody = document.getElementById('tabelBody');
+const totalPasien = document.getElementById('totalPasien');
+const emptyState = document.getElementById('emptyState');
+const btnHapusSemua = document.getElementById('btnHapusSemua');
+
+function renderTabel() {
+  if (!tabelBody) return;
+
+  const data = ambilDataPasien();
+  tabelBody.innerHTML = '';
+
+  if (data.length === 0) {
+    emptyState.style.display = 'flex';
+    tabelBody.closest('table').style.display = 'none';
+    btnHapusSemua.style.display = 'none';
+    totalPasien.textContent = '0';
+    return;
+  }
+
+  emptyState.style.display = 'none';
+  tabelBody.closest('table').style.display = 'table';
+  btnHapusSemua.style.display = 'inline-block';
+  totalPasien.textContent = data.length;
+
+  data.forEach((pasien, index) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${index + 1}</td>
+      <td><strong>${pasien.nama}</strong></td>
+      <td>${pasien.nik}</td>
+      <td>${pasien.tanggalLahir}</td>
+      <td>${pasien.jenisKelamin}</td>
+      <td>${pasien.telepon}</td>
+      <td>${pasien.statusPasien}</td>
+      <td>${pasien.bpjs}</td>
+      <td>${pasien.poli}</td>
+      <td>${pasien.dokter}</td>
+      <td>${pasien.tanggalKunjungan}</td>
+      <td class="keluhan-cell">${pasien.keluhan}</td>
+      <td>
+        <button class="btn-hapus-row" data-id="${pasien.id}">Hapus</button>
+      </td>
+    `;
+    tabelBody.appendChild(tr);
   });
 
+  tabelBody.querySelectorAll('.btn-hapus-row').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = Number(btn.dataset.id);
+      if (confirm('Hapus data pasien ini?')) {
+        const dataBaru = ambilDataPasien().filter(p => p.id !== id);
+        simpanDataPasien(dataBaru);
+        renderTabel();
+      }
+    });
+  });
 }
+
+if (btnHapusSemua) {
+  btnHapusSemua.addEventListener('click', () => {
+    if (confirm('Hapus SEMUA data pasien? Tindakan ini tidak dapat dibatalkan.')) {
+      simpanDataPasien([]);
+      renderTabel();
+    }
+  });
+}
+
+renderTabel();
