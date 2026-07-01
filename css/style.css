@@ -578,18 +578,118 @@ form h2 {
   transform: translateY(0);
 }
 
-@media (max-width: 768px) {
-  .janji-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-
-  .janji-info {
-    order: -1;
-  }
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+ 
+.tabel-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(28, 43, 34, 0.08);
+}
+ 
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  font-size: 0.85rem;
+  min-width: 900px;
+}
+ 
+thead tr {
+  background-color: #1a6b4a;
+  color: #ffffff;
+}
+ 
+thead th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+ 
+tbody tr {
+  border-bottom: 1px solid #f0ece4;
+  transition: background-color 0.2s;
+}
+ 
+tbody tr:last-child {
+  border-bottom: none;
+}
+ 
+tbody tr:hover {
+  background-color: #f9f6f0;
+}
+ 
+tbody td {
+  padding: 12px 16px;
+  color: #1c2b22;
+  vertical-align: top;
+  max-width: 160px;
+}
+ 
+tbody td.keluhan-cell {
+  max-width: 200px;
+  white-space: normal;
+  word-break: break-word;
+  color: #6b7a72;
+  font-size: 0.8rem;
+}
+ 
+.btn-hapus-row {
+  background-color: transparent;
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
+  padding: 5px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+ 
+.btn-hapus-row:hover {
+  background-color: #e74c3c;
+  color: #ffffff;
+}
+ 
+.btn-hapus {
+  background-color: transparent;
+  border: 1px solid #e74c3c;
+  color: #e74c3c;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s;
+}
+ 
+.btn-hapus:hover {
+  background-color: #e74c3c;
+  color: #ffffff;
+}
+ 
+.empty-state {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 60px 0;
+  color: #6b7a72;
+  text-align: center;
+}
+ 
+.empty-state p {
+  font-size: 1rem;
 }
 
 @keyframes fadeIn {
@@ -666,7 +766,25 @@ form h2 {
     grid-template-columns: 1fr;
     gap: 24px;
   }
+
+  .janji-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .janji-info {
+    order: -1;
+  }
+
+  .tabel-header {
+    flex-direction: column;
+  }
+  
 }
+
 
 @media (max-width: 480px) {
   .hero h1 {
