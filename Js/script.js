@@ -70,6 +70,97 @@ if (formJanji) {
   const emailGroup = document.getElementById('emailGroup');
   const inputEmail = document.getElementById('email');
   const radioMetode = document.querySelectorAll('input[name="metodePengiriman"]');
+  const DRAFT_KEY = 'klinik_draft_janji';
+
+  function simpanDraft() {
+    const draft = {
+      nama: document.getElementById('nama').value,
+      nik: inputNIK.value,
+      tanggalLahir: inputTanggalLahir.value,
+      jenisKelamin: document.querySelector('input[name="jenisKelamin"]:checked')?.value || '',
+      telepon: document.getElementById('telepon').value,
+      statusPasien: document.querySelector('input[name="statusPasien"]:checked')?.value || '',
+      bpjs: document.querySelector('input[name="bpjs"]:checked')?.value || '',
+      poli: selectPoli.value,
+      dokter: selectDokter.value,
+      tanggalKunjungan: inputTanggalKunjungan.value,
+      keluhan: document.getElementById('keluhan').value,
+      metode: document.querySelector('input[name="metodePengiriman"]:checked')?.value || 'whatsapp',
+      email: inputEmail.value
+    };
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  }
+
+  function pulihkanDraft() {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return;
+
+    const draft = JSON.parse(raw);
+
+    document.getElementById('nama').value = draft.nama || '';
+    inputNIK.value = draft.nik || '';
+    inputTanggalLahir.value = draft.tanggalLahir || '';
+    document.getElementById('telepon').value = draft.telepon || '';
+    document.getElementById('keluhan').value = draft.keluhan || '';
+
+    // Radio: jenis kelamin
+    if (draft.jenisKelamin) {
+      const radio = document.querySelector(`input[name="jenisKelamin"][value="${draft.jenisKelamin}"]`);
+      if (radio) radio.checked = true;
+    }
+
+    // Radio: status pasien
+    if (draft.statusPasien) {
+      const radio = document.querySelector(`input[name="statusPasien"][value="${draft.statusPasien}"]`);
+      if (radio) radio.checked = true;
+    }
+
+    // Radio: BPJS
+    if (draft.bpjs) {
+      const radio = document.querySelector(`input[name="bpjs"][value="${draft.bpjs}"]`);
+      if (radio) radio.checked = true;
+    }
+
+    // Pulihkan poli lalu isi ulang dropdown dokter
+    if (draft.poli) {
+      selectPoli.value = draft.poli;
+
+      // Isi ulang dropdown dokter sesuai poli
+      const dokterList = dataDokter[draft.poli] || [];
+      selectDokter.innerHTML = '<option value="" disabled selected>-- Pilih Dokter --</option>';
+      dokterList.forEach(({ value, label }) => {
+        const opt = document.createElement('option');
+        opt.value = value;
+        opt.textContent = label;
+        selectDokter.appendChild(opt);
+      });
+
+      // Baru set nilai dokter setelah option-nya tersedia
+      if (draft.dokter) selectDokter.value = draft.dokter;
+    }
+
+    if (draft.tanggalKunjungan) inputTanggalKunjungan.value = draft.tanggalKunjungan;
+
+    // Pulihkan metode pengiriman
+    if (draft.metode) {
+      const radio = document.querySelector(`input[name="metodePengiriman"][value="${draft.metode}"]`);
+      if (radio) {
+        radio.checked = true;
+        if (draft.metode === 'email') {
+          emailGroup.style.display = 'flex';
+          inputEmail.setAttribute('required', 'true');
+          inputEmail.value = draft.email || '';
+        }
+      }
+    }
+  }
+
+  // Panggil pulihkan saat halaman dibuka
+  pulihkanDraft();
+
+  // Simpan draft setiap kali ada perubahan di form
+  formJanji.addEventListener('input', simpanDraft);
+  formJanji.addEventListener('change', simpanDraft);
 
   const today = new Date();
   const toDateStr = (d) => d.toISOString().split('T')[0];
@@ -152,6 +243,10 @@ if (formJanji) {
     dataPasien.push(dataBaru);
     simpanDataPasien(dataPasien);
 
+    // Hapus draft setelah berhasil disimpan
+    localStorage.removeItem(DRAFT_KEY);
+
+
     const pesan =
       `*PENDAFTARAN JANJI TEMU*
 *Klinik Sehat Bersama*
@@ -181,6 +276,10 @@ Keluhan       : ${keluhan}`;
     }
 
     alert('Pendaftaran berhasil disimpan! Data dapat dilihat di halaman Daftar Pasien.');
+    formJanji.reset();
+    emailGroup.style.display = 'none';
+    // Reset dropdown dokter ke default
+    selectDokter.innerHTML = '<option value="" disabled selected>-- Pilih Dokter --</option>';
     formJanji.reset();
     emailGroup.style.display = 'none';
   });
